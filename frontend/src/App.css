@@ -1,9 +1,226 @@
-.App { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; min-height: 100vh; }
-.header { background-color: #003366; color: white; padding: 1rem 2rem; text-align: center; }
-.container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-.event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-.event-card { background: white; padding: 1.5rem; border-radius: 8px; shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 5px solid #003366; }
-.event-card h3 { margin-top: 0; color: #003366; }
-.badge { background: #e0e0e0; display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; margin: 10px 0; }
-.btn { background-color: #003366; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
-.btn:hover { background-color: #0055aa; }
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.header {
+  background-color: #003366;
+  color: white;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ==========================================================================
+   Auth Section (Login / Register)
+   ========================================================================== */
+
+/* Wraps whichever of Login/Register is active, centered on the page */
+.auth-page-container {
+  max-width: 420px;
+  margin: 20px auto;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.auth-footer p {
+  margin: 8px 0;
+}
+
+.link-small {
+  color: #666;
+  text-decoration: underline;
+}
+
+.link-small:hover {
+  color: #003366;
+}
+
+.link-bold {
+  color: #003366;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-bold:hover {
+  color: #0055aa;
+}
+
+/* Card style specifically for auth forms (kept separate from .event-card
+   so dashboard/event cards aren't affected) */
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border-top: 6px solid #003366;
+  text-align: center;
+}
+
+.auth-card h2 {
+  color: #003366;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #003366;
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+}
+
+/* ==========================================================================
+   Filter Bar
+   ========================================================================== */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  outline: none;
+  border-color: #003366;
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+}
+
+/* ==========================================================================
+   Event Grid and Cards
+   ========================================================================== */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.event-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #003366;
+  transition: transform 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-card h3 {
+  margin-top: 0;
+  color: #003366;
+}
+
+/* ==========================================================================
+   Admin Stat Boxes
+   ========================================================================== */
+.stat-box {
+  background: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #d1d9e0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Buttons and Badges
+   ========================================================================== */
+.badge {
+  background: #e0e0e0;
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.btn {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.9rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  background-color: #0055aa;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Responsiveness (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .event-grid {
+    grid-template-columns: 1fr; /* Stack cards on mobile */
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.2rem;
+  }
+
+  .filter-bar {
+    flex-direction: column; /* Stack search and dropdown */
+  }
+
+  .stat-box {
+    margin-bottom: 10px;
+  }
+}

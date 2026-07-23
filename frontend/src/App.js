@@ -12,6 +12,27 @@ function App() {
     !!localStorage.getItem("token")
   );
 
+  // Toggles between the login card and the register card
+  const [authMode, setAuthMode] = useState("login");
+
+  // Search & filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  // Logout (also used when a token has expired / been rejected)
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUserData(null);
+    setNotifications([]);
+    setAuthMode("login");
+  };
+
   // Fetch data
   useEffect(() => {
     // Fetch Events
@@ -26,32 +47,32 @@ function App() {
       // Fetch Logged-in User
       axios
         .get("http://127.0.0.1:8000/api/users/profile/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getAuthHeaders(),
         })
         .then((res) => setUserData(res.data))
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          if (err.response?.status === 401) {
+            handleLogout();
+          } else {
+            console.log(err);
+          }
+        });
 
       // Fetch Notifications
       axios
         .get("http://127.0.0.1:8000/api/notifications/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getAuthHeaders(),
         })
         .then((res) => setNotifications(res.data))
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          if (err.response?.status === 401) {
+            handleLogout();
+          } else {
+            console.log(err);
+          }
+        });
     }
   }, [isLoggedIn]);
-
-  // Logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setUserData(null);
-    setNotifications([]);
-  };
 
   // Register for Event
   const handleRegisterForEvent = async (eventId) => {
@@ -67,14 +88,18 @@ function App() {
         `http://127.0.0.1:8000/api/events/register-signup/${eventId}/`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getAuthHeaders(),
         }
       );
 
       alert(response.data.message);
     } catch (err) {
+      if (err.response?.status === 401) {
+        handleLogout();
+        alert("Your login session expired. Please login again.");
+        return;
+      }
+
       const errorMsg = err.response
         ? err.response.data.error || err.response.data.message
         : "Something went wrong";
@@ -82,6 +107,16 @@ function App() {
       alert("Failed: " + errorMsg);
     }
   };
+
+  // Filtering logic (search by title + category match)
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch = event.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      filterCategory === "All" || event.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="App">
@@ -112,15 +147,15 @@ function App() {
 
       <div className="container">
         {!isLoggedIn ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "20px",
-            }}
-          >
-            <Login onLoginSuccess={() => setIsLoggedIn(true)} />
-            <Register />
+          <div className="auth-page-container">
+            {authMode === "login" ? (
+              <Login
+                onLoginSuccess={() => setIsLoggedIn(true)}
+                switchToRegister={() => setAuthMode("register")}
+              />
+            ) : (
+              <Register switchToLogin={() => setAuthMode("login")} />
+            )}
           </div>
         ) : (
           <main>
@@ -190,37 +225,70 @@ function App() {
             {/* Event Section */}
             <h2>Upcoming Events</h2>
 
+            {/* Search & Filter Bar */}
+            <div
+              className="filter-bar"
+              style={{
+                display: "flex",
+                gap: "10px",
+                marginBottom: "20px",
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Search events..."
+                value={searchQuery}
+                style={{ flex: 2 }}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <select
+                value={filterCategory}
+                style={{ flex: 1 }}
+                onChange={(e) => setFilterCategory(e.target.value)}
+              >
+                <option value="All">All Categories</option>
+                <option value="Academic">Academic</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sporting">Sporting</option>
+              </select>
+            </div>
+
             <div className="event-grid">
-              {events.map((event) => (
-                <div key={event.id} className="event-card">
-                  <h3>{event.title}</h3>
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map((event) => (
+                  <div key={event.id} className="event-card">
+                    <h3>{event.title}</h3>
 
-                  <p>{event.description}</p>
+                    <p>{event.description}</p>
 
-                  <div
-                    style={{
-                      display: "inline-block",
-                      background: "#28a745",
-                      color: "#fff",
-                      padding: "8px 15px",
-                      borderRadius: "20px",
-                      fontWeight: "bold",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    {event.points_to_allocate} Points Available
+                    <div
+                      style={{
+                        display: "inline-block",
+                        background: "#28a745",
+                        color: "#fff",
+                        padding: "8px 15px",
+                        borderRadius: "20px",
+                        fontWeight: "bold",
+                        marginBottom: "15px",
+                      }}
+                    >
+                      {event.points_to_allocate} Points Available
+                    </div>
+
+                    <br />
+
+                    <button
+                      className="btn"
+                      onClick={() => handleRegisterForEvent(event.id)}
+                    >
+                      Register for Event
+                    </button>
                   </div>
-
-                  <br />
-
-                  <button
-                    className="btn"
-                    onClick={() => handleRegisterForEvent(event.id)}
-                  >
-                    Register for Event
-                  </button>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No events match your search/filter.</p>
+              )}
             </div>
           </main>
         )}
