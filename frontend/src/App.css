@@ -1,0 +1,9 @@
+.App { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; min-height: 100vh; }
+.header { background-color: #003366; color: white; padding: 1rem 2rem; text-align: center; }
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+.event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.event-card { background: white; padding: 1.5rem; border-radius: 8px; shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 5px solid #003366; }
+.event-card h3 { margin-top: 0; color: #003366; }
+.badge { background: #e0e0e0; display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; margin: 10px 0; }
+.btn { background-color: #003366; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+.btn:hover { background-color: #0055aa; }
